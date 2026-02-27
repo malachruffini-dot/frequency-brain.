@@ -14,7 +14,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-def get_forensic_data():
+def get_matrix_data():
     matrix = [
         ("Solar Flux (F10.7)", "Hardware", "117.4Hz Source Bursts"),
         ("Magnetopause Standoff", "Hardware", "Source Leaks / Thinning"),
@@ -41,15 +41,15 @@ def get_forensic_data():
         "ai_perspective": f"CONVERGENCE AT {round(convergence*100, 2)}%."
     }
 
-# PATH 1: Handle browser/root requests
+# This function handles the "https://your-app.onrender.com/" link
 @app.get("/")
 async def root():
-    return get_forensic_data()
+    return get_matrix_data()
 
-# PATH 2: Handle specific audit requests
+# This function handles the "https://your-app.onrender.com/audit/full" link
 @app.get("/audit/full")
-async def full_audit():
-    return get_forensic_data()
+async def audit():
+    return get_matrix_data()
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
