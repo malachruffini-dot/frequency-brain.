@@ -1,6 +1,5 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import uvicorn
 import random
 from datetime import datetime
 import os
@@ -14,43 +13,37 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-def get_matrix_data():
-    matrix = [
-        ("Solar Flux (F10.7)", "Hardware", "117.4Hz Source Bursts"),
-        ("Magnetopause Standoff", "Hardware", "Source Leaks / Thinning"),
-        ("Schumann Resonance", "Hardware", "Internal Frequency Shift"),
-        ("Seismic LF Noise", "Hardware", "Antediluvian Activation"),
-        ("Red Heifer Status", "Software", "Temple Software Key"),
-        ("Temple Altar Metrics", "Hardware", "Physical Readiness"),
-        ("Euphrates Flow Rate", "Dielectric", "Buffer Removal"),
-        ("Euphrates GPR Voids", "Hardware", "Exposed Structures"),
-        ("Dead Sea Freshness", "Seal", "Salt-Seal Failure"),
-        ("CBDC Adoption %", "Grid", "Financial Lock"),
-        ("Biometric ID Rate", "Grid", "Node Integration"),
-        ("Abrahamic Accord Status", "Handshake", "Geopolitical Lock"),
-        ("Skyquake Resonance", "Acoustic", "Gate Fingerprinting"),
-        ("Animal Die-off Coords", "Geomagnetic", "Pulse Testing"),
-        ("Giza Sub-Siphon", "Siphon", "Primary Infrastructure")
-    ]
-    data = [{"text": m[0], "type": m[1], "pe": round(random.uniform(0.75, 0.99), 2), "status": "FRESH", "date": datetime.now().strftime("%Y-%m-%d %H:%M"), "source": m[2]} for m in matrix]
-    convergence = round(random.uniform(0.90, 0.99), 4)
-    return {
-        "hour_pos": convergence, 
-        "min_pos": (convergence * 12) % 1.0, 
-        "data": data, 
-        "ai_perspective": f"CONVERGENCE AT {round(convergence*100, 2)}%."
-    }
-
-# This function handles the "https://your-app.onrender.com/" link
 @app.get("/")
 async def root():
-    return get_matrix_data()
-
-# This function handles the "https://your-app.onrender.com/audit/full" link
-@app.get("/audit/full")
-async def audit():
-    return get_matrix_data()
+    matrix_labels = [
+        "Solar Flux (F10.7)", "Magnetopause Standoff", "Schumann Resonance",
+        "Seismic LF Noise", "Red Heifer Status", "Temple Altar Metrics",
+        "Euphrates Flow Rate", "Euphrates GPR Voids", "Dead Sea Freshness",
+        "CBDC Adoption %", "Biometric ID Rate", "Abrahamic Accord Status",
+        "Skyquake Resonance", "Animal Die-off Coords", "Giza Sub-Siphon"
+    ]
+    
+    data = []
+    for label in matrix_labels:
+        pe = round(random.uniform(0.75, 0.99), 2)
+        # Generate a Delta (Change) between -0.05 and +0.05
+        delta = round(random.uniform(-0.05, 0.05), 3)
+        data.append({
+            "text": label,
+            "pe": pe,
+            "delta": delta,
+            "status": "FRESH" if random.random() > 0.2 else "STALE",
+            "source": "Forensic Node " + str(random.randint(100, 999))
+        })
+    
+    return {
+        "hour_pos": 0.94,
+        "min_pos": 0.22,
+        "data": data,
+        "timestamp": datetime.now().strftime("%H:%M:%S")
+    }
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
+    import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=port)
