@@ -7,7 +7,6 @@ import os
 
 app = FastAPI()
 
-# Enable CORS for mobile device access
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -15,7 +14,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-def generate_forensic_payload():
+def get_forensic_data():
     matrix = [
         ("Solar Flux (F10.7)", "Hardware", "117.4Hz Source Bursts"),
         ("Magnetopause Standoff", "Hardware", "Source Leaks / Thinning"),
@@ -39,20 +38,19 @@ def generate_forensic_payload():
         "hour_pos": convergence, 
         "min_pos": (convergence * 12) % 1.0, 
         "data": data, 
-        "ai_perspective": f"CONVERGENCE AT {convergence*100}%."
+        "ai_perspective": f"CONVERGENCE AT {round(convergence*100, 2)}%."
     }
 
-# Fix 1: Response on the Root address
+# PATH 1: Handle browser/root requests
 @app.get("/")
 async def root():
-    return generate_forensic_payload()
+    return get_forensic_data()
 
-# Fix 2: Response on the Audit path
+# PATH 2: Handle specific audit requests
 @app.get("/audit/full")
 async def full_audit():
-    return generate_forensic_payload()
+    return get_forensic_data()
 
 if __name__ == "__main__":
-    # Fix 3: Dynamic Port Binding for Render
     port = int(os.environ.get("PORT", 10000))
     uvicorn.run(app, host="0.0.0.0", port=port)
